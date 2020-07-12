@@ -1,6 +1,5 @@
 GOPKG ?=	moul.io/makerlog
 DOCKER_IMAGE ?=	moul/makerlog
-GOBINS ?=	.
-NPM_PACKAGES ?=	.
+GOBINS ?=	./cmd/makerlog
 
 include rules.mk

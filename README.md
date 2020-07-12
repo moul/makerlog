@@ -19,14 +19,144 @@
 
 ## Usage
 
-TODO
+```console
+# get a token by yourself or use the built-in login helper
+$ makerlog login --username=YOUR_USERNAME --password=YOUR_PASS
+cof2CuG3Aungiegi5udee9zaeBiemu1gohngiusa
+```
+
+```console
+# then use this token as parameter
+$ makerlog --token=YOUR_TOKEN COMMAND
+# or env var
+$ export MAKERLOG_TOKEN=YOUR_TOKEN
+$ makerlog COMMAND
+```
+
+```console
+# get raw notifications
+$ makerlog raw notifications_list | jq ". | length"
+1
+
+$ makerlog raw notifications_list | jq ".[0]"
+{
+  "id": 238616,
+  "key": "received_praise",
+  "verb": "praised you",
+  "recipient": {
+    "id": 5865,
+    "username": "moul",
+    "first_name": "Manfred",
+    "last_name": "Touron",
+    "description": "Coding every day since 2014",
+    "avatar": "https://gravatar.com/avatar/da14d5cef42c8142d3d40286f28f29bd?s=150&d=mm&r=pg",
+    "streak": 8,
+    "timezone": "Europe/Paris",
+    "week_tda": 1,
+    "twitter_handle": "moul",
+    "product_hunt_handle": "m42am",
+    "github_handle": "moul",
+    "nomadlist_handle": "moul",
+    "bmc_handle": "moul",
+    "shipstreams_handle": "moul42",
+    "website": "https://manfred.life",
+    "digest": true,
+    "gold": true,
+    "accent": "#ff00e8",
+    "maker_score": 413,
+    "hardcore_mode": true,
+    "email_notifications": true,
+    "og_image": "https://ik.imagekit.io/makerlog/media/uploads/og/2020/07/16/612312ff-d17f-44e3-9203-264bff6655ec.jpg",
+    "date_joined": "2020-06-15T14:18:59.0813+02:00"
+  },
+  "actor": {
+    "id": 1070,
+    "username": "lori",
+    "first_name": "Lori",
+    "last_name": "Karikari",
+    "description": "web dev and ops",
+    "avatar": "https://ik.imagekit.io/makerlog/media/uploads/avatars/2020/02/29/IMG_20200210_131130_4055221726763142286.jpg",
+    "streak": 127,
+    "timezone": "Europe/Paris",
+    "week_tda": 3,
+    "twitter_handle": "LoriKarikari",
+    "instagram_handle": "lorikarikari",
+    "product_hunt_handle": "lorikarikari",
+    "github_handle": "lorikarikari",
+    "telegram_handle": "lorikarikari",
+    "gold": true,
+    "accent": "#9a35ce",
+    "maker_score": 659,
+    "dark_mode": true,
+    "weekends_off": true,
+    "og_image": "https://ik.imagekit.io/makerlog/media/uploads/og/2020/07/16/a8fd93d9-ab24-4425-beb0-c22cdab6c8d9.jpg",
+    "date_joined": "2018-12-12T13:49:09.353972+01:00"
+  },
+  "target": {
+    "id": 287805,
+    "done": true,
+    "content": "🐙 yesterday on GitHub #oss #berty #sgtm",
+    "created_at": "2020-07-16T11:09:26.386739+02:00",
+    "updated_at": "2020-07-16T11:45:31.442381+02:00",
+    "done_at": "2020-07-16T11:09:26.386547+02:00",
+    "user": {
+      "id": 5865,
+      "username": "moul",
+      "first_name": "Manfred",
+      "last_name": "Touron",
+      "description": "Coding every day since 2014",
+      "avatar": "https://gravatar.com/avatar/da14d5cef42c8142d3d40286f28f29bd?s=150&d=mm&r=pg",
+      "streak": 8,
+      "timezone": "Europe/Paris",
+      "week_tda": 1,
+      "twitter_handle": "moul",
+      "product_hunt_handle": "m42am",
+      "github_handle": "moul",
+      "nomadlist_handle": "moul",
+      "bmc_handle": "moul",
+      "shipstreams_handle": "moul42",
+      "website": "https://manfred.life",
+      "digest": true,
+      "gold": true,
+      "accent": "#ff00e8",
+      "maker_score": 413,
+      "hardcore_mode": true,
+      "email_notifications": true,
+      "og_image": "https://ik.imagekit.io/makerlog/media/uploads/og/2020/07/16/612312ff-d17f-44e3-9203-264bff6655ec.jpg",
+      "date_joined": "2020-06-15T14:18:59.0813+02:00"
+    },
+    "project_set": [
+      {
+        "id": 13767,
+        "name": "sgtm",
+        "user": 5865
+      },
+      {
+        "id": 13394,
+        "name": "berty",
+        "user": 5865
+      },
+      {
+        "id": 13405,
+        "name": "oss",
+        "user": 5865
+      }
+    ],
+    "praise": 5,
+    "attachment": "https://ik.imagekit.io/makerlog/media/uploads/tasks/2020/07/16/320fc7e105e436af22eb1fa67c9cb415.png",
+    "og_image": "https://ik.imagekit.io/makerlog/media/uploads/tasks/2020/07/16/0c062ed4-32eb-487f-8b6b-32e9db41e607.jpg"
+  },
+  "created": "2020-07-16T11:45:15.248305+02:00",
+  "target_type": "task"
+}
+```
 
 ## Install
 
 ### Using go
 
 ```console
-$ go get -u moul.io/makerlog
+$ go get -u moul.io/makerlog/cmd/makerlog
 ```
 
 ### Releases
