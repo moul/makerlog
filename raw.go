@@ -1,10 +1,13 @@
 package makerlog
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/google/go-querystring/query"
+	"moul.io/godev"
 	"moul.io/makerlog/makerlogtypes"
 )
 
@@ -45,4 +48,28 @@ func (c *Client) RawTasksList(ctx context.Context, req *makerlogtypes.TasksListR
 	}
 
 	return &reply, nil
+}
+
+func (c *Client) RawTasksCreate(ctx context.Context, req *makerlogtypes.TasksCreateRequest) (*makerlogtypes.TasksCreateReply, error) {
+	reqBody, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := c.http.Post("https://api.getmakerlog.com/tasks/", "application/json", bytes.NewBuffer(reqBody))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	//var reply makerlogtypes.TasksCreateReply
+	var reply interface{}
+	if err := json.NewDecoder(resp.Body).Decode(&reply); err != nil {
+		return nil, err
+	}
+	fmt.Println(godev.PrettyJSON(reply))
+
+	return nil, nil
+
+	//return &reply, nil
 }

@@ -29,7 +29,8 @@ func run(args []string) error {
 		token              string
 		username, password string
 		prettyJSON         bool
-		tasksListUsername  string
+		tasksListRequest   makerlogtypes.TasksListRequest
+		tasksCreateRequest makerlogtypes.TasksCreateRequest
 	)
 	rootFlags := flag.NewFlagSet("root", flag.ExitOnError)
 	rootFlags.StringVar(&token, "token", "", "Your private API key (use the 'login' command to get one)")
@@ -39,7 +40,15 @@ func run(args []string) error {
 	rawFlags := flag.NewFlagSet("raw", flag.ExitOnError)
 	rawFlags.BoolVar(&prettyJSON, "pretty", false, "pretty JSON")
 	tasksListFlags := flag.NewFlagSet("tasks-lists", flag.ExitOnError)
-	tasksListFlags.StringVar(&tasksListUsername, "user", "", "filter by username")
+	tasksListFlags.StringVar(&tasksListRequest.User, "user", "", "filter by username")
+	tasksListFlags.IntVar(&tasksListRequest.Limit, "limit", 20, "number of results to return per page")
+	tasksListFlags.IntVar(&tasksListRequest.Offset, "offset", 0, "the initial index from which to return the results")
+	tasksCreateFlags := flag.NewFlagSet("tasks-creates", flag.ExitOnError)
+	tasksCreateFlags.StringVar(&tasksCreateRequest.Content, "content", "", "")
+	tasksCreateFlags.StringVar(&tasksCreateRequest.Description, "description", "", "")
+	tasksCreateFlags.BoolVar(&tasksCreateRequest.Done, "done", false, "")
+	tasksCreateFlags.BoolVar(&tasksCreateRequest.InProgress, "in-progress", false, "")
+	//tasksCreateFlags.TimeVar(&tasksCreateRequest.DueAt, "due-at", nil, "")
 
 	root := &ffcli.Command{
 		Name:       "makerlog",
@@ -60,8 +69,7 @@ func run(args []string) error {
 					fmt.Println(token)
 					return nil
 				},
-			},
-			{
+			}, {
 				Name:       "raw",
 				FlagSet:    rawFlags,
 				ShortHelp:  "raw API calls",
@@ -87,17 +95,30 @@ func run(args []string) error {
 							}
 							return nil
 						},
-					},
-					{
+					}, {
 						Name:      "tasks_list",
 						ShortHelp: "all public tasks",
 						FlagSet:   tasksListFlags,
 						Exec: func(ctx context.Context, _ []string) error {
 							client := makerlog.New(token)
-							req := makerlogtypes.TasksListRequest{
-								User: tasksListUsername,
+							ret, err := client.RawTasksList(ctx, &tasksListRequest)
+							if err != nil {
+								return err
 							}
-							ret, err := client.RawTasksList(ctx, &req)
+							if prettyJSON {
+								fmt.Println(godev.PrettyJSON(ret))
+							} else {
+								fmt.Println(godev.JSON(ret))
+							}
+							return nil
+						},
+					}, {
+						Name:      "tasks_create",
+						ShortHelp: "creates a new task",
+						FlagSet:   tasksCreateFlags,
+						Exec: func(ctx context.Context, _ []string) error {
+							client := makerlog.New(token)
+							ret, err := client.RawTasksCreate(ctx, &tasksCreateRequest)
 							if err != nil {
 								return err
 							}
