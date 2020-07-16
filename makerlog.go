@@ -1,13 +1,11 @@
 package makerlog
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"net/url"
 
-	"moul.io/makerlog/makerlogtypes"
 	"moul.io/roundtripper"
 )
 
@@ -35,11 +33,7 @@ func Login(username, password string) (string, error) {
 	if username == "" || password == "" {
 		return "", errors.New("missing username or password")
 	}
-
-	formData := url.Values{
-		"username": {username},
-		"password": {password},
-	}
+	formData := url.Values{"username": {username}, "password": {password}}
 
 	// FIXME: use context
 	resp, err := http.PostForm("https://api.getmakerlog.com/api-token-auth/", formData)
@@ -56,19 +50,4 @@ func Login(username, password string) (string, error) {
 	}
 
 	return reply.Token, nil
-}
-
-func (c *Client) RawNotificationsList(ctx context.Context) (*makerlogtypes.NotificationsListReply, error) {
-	resp, err := c.http.Get("https://api.getmakerlog.com/notifications/")
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	var reply makerlogtypes.NotificationsListReply
-	if err := json.NewDecoder(resp.Body).Decode(&reply); err != nil {
-		return nil, err
-	}
-
-	return &reply, nil
 }

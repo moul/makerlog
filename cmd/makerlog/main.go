@@ -12,6 +12,7 @@ import (
 	"moul.io/banner"
 	"moul.io/godev"
 	"moul.io/makerlog"
+	"moul.io/makerlog/makerlogtypes"
 	"moul.io/motd"
 )
 
@@ -27,12 +28,18 @@ func run(args []string) error {
 	var (
 		token              string
 		username, password string
+		prettyJSON         bool
+		tasksListUsername  string
 	)
 	rootFlags := flag.NewFlagSet("root", flag.ExitOnError)
 	rootFlags.StringVar(&token, "token", "", "Your private API key (use the 'login' command to get one)")
 	loginFlags := flag.NewFlagSet("login", flag.ExitOnError)
 	loginFlags.StringVar(&username, "username", os.Getenv("USER"), "your username")
 	loginFlags.StringVar(&password, "password", "", "your password")
+	rawFlags := flag.NewFlagSet("raw", flag.ExitOnError)
+	rawFlags.BoolVar(&prettyJSON, "pretty", false, "pretty JSON")
+	tasksListFlags := flag.NewFlagSet("tasks-lists", flag.ExitOnError)
+	tasksListFlags.StringVar(&tasksListUsername, "user", "", "filter by username")
 
 	root := &ffcli.Command{
 		Name:       "makerlog",
@@ -56,6 +63,7 @@ func run(args []string) error {
 			},
 			{
 				Name:       "raw",
+				FlagSet:    rawFlags,
 				ShortHelp:  "raw API calls",
 				ShortUsage: "makerlog raw <subcommand>",
 				Exec: func(_ context.Context, _ []string) error {
@@ -72,8 +80,32 @@ func run(args []string) error {
 							if err != nil {
 								return err
 							}
-							// FIXME: flag for pretty
-							fmt.Println(godev.JSON(ret))
+							if prettyJSON {
+								fmt.Println(godev.PrettyJSON(ret))
+							} else {
+								fmt.Println(godev.JSON(ret))
+							}
+							return nil
+						},
+					},
+					{
+						Name:      "tasks_list",
+						ShortHelp: "all public tasks",
+						FlagSet:   tasksListFlags,
+						Exec: func(ctx context.Context, _ []string) error {
+							client := makerlog.New(token)
+							req := makerlogtypes.TasksListRequest{
+								User: tasksListUsername,
+							}
+							ret, err := client.RawTasksList(ctx, &req)
+							if err != nil {
+								return err
+							}
+							if prettyJSON {
+								fmt.Println(godev.PrettyJSON(ret))
+							} else {
+								fmt.Println(godev.JSON(ret))
+							}
 							return nil
 						},
 					},

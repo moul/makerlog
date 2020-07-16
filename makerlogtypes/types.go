@@ -2,147 +2,47 @@ package makerlogtypes
 
 import "time"
 
+// POST /tasks
+
+type TasksCreateRequest struct {
+	Content     string     `json:"content,omitempty"`
+	Done        *bool      `json:"done,omitempty"`
+	InProgress  *bool      `json:"in_progress,omitempty"`
+	DueAt       *time.Time `json:"due_at,omitempty"`
+	User        *User      `json:"user,omitempty"`
+	Description *string    `json:"description,omitempty"`
+}
+type TasksCreateReply Task
+
+// GET /tasks/
+
+type TasksListRequest struct {
+	Done      bool       `json:"done,omitempty" url:"done,omitempty"`
+	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	User      string     `json:"user,omitempty" url:"user,omitempty"`
+	StartDate *time.Time `json:"start_date,omitempty" url:"start_date,omitempty"`
+	EndDate   *time.Time `json:"end_date,omitempty" url:"end_date,omitempty"`
+	Limit     int        `json:"limit,omitempty" url:"limit,omitempty"`
+	Offset    int        `json:"offset,omitempty" url:"offset,omitempty"`
+	DateRange string     `json:"date_range,omitempty" url:"date_range,omitempty"`
+}
+type TasksListReply struct {
+	Count    int     `json:"count,omitempty"`
+	Next     string  `json:"next,omitempty"`
+	Previous string  `json:"previous,omitempty"`
+	Results  []*Task `json:"results,omitempty"`
+}
+
+// GET /notifications/
+
 type NotificationsListReply []struct {
-	ID        int    `json:"id,omitempty"`
-	Key       string `json:"key,omitempty"`
-	Read      bool   `json:"read,omitempty"`
-	Verb      string `json:"verb,omitempty"`
-	Recipient struct {
-		ID                 int         `json:"id,omitempty"`
-		Username           string      `json:"username,omitempty"`
-		FirstName          string      `json:"first_name,omitempty"`
-		LastName           string      `json:"last_name,omitempty"`
-		Status             interface{} `json:"status,omitempty"`
-		Description        string      `json:"description,omitempty"`
-		Verified           bool        `json:"verified,omitempty"`
-		Private            bool        `json:"private,omitempty"`
-		Avatar             string      `json:"avatar,omitempty"`
-		Streak             int         `json:"streak,omitempty"`
-		Timezone           string      `json:"timezone,omitempty"`
-		WeekTda            int         `json:"week_tda,omitempty"`
-		TwitterHandle      string      `json:"twitter_handle,omitempty"`
-		InstagramHandle    string      `json:"instagram_handle,omitempty"`
-		ProductHuntHandle  string      `json:"product_hunt_handle,omitempty"`
-		GithubHandle       string      `json:"github_handle,omitempty"`
-		TelegramHandle     string      `json:"telegram_handle,omitempty"`
-		NomadlistHandle    string      `json:"nomadlist_handle,omitempty"`
-		BmcHandle          string      `json:"bmc_handle,omitempty"`
-		Header             interface{} `json:"header,omitempty"`
-		IsStaff            bool        `json:"is_staff,omitempty"`
-		Donor              bool        `json:"donor,omitempty"`
-		ShipstreamsHandle  string      `json:"shipstreams_handle,omitempty"`
-		Website            string      `json:"website,omitempty"`
-		Tester             bool        `json:"tester,omitempty"`
-		IsLive             bool        `json:"is_live,omitempty"`
-		Digest             bool        `json:"digest,omitempty"`
-		Gold               bool        `json:"gold,omitempty"`
-		Accent             string      `json:"accent,omitempty"`
-		MakerScore         int         `json:"maker_score,omitempty"`
-		DarkMode           bool        `json:"dark_mode,omitempty"`
-		WeekendsOff        bool        `json:"weekends_off,omitempty"`
-		HardcoreMode       bool        `json:"hardcore_mode,omitempty"`
-		EmailNotifications bool        `json:"email_notifications,omitempty"`
-		OgImage            string      `json:"og_image,omitempty"`
-		DateJoined         time.Time   `json:"date_joined,omitempty"`
-	} `json:"recipient,omitempty"`
-	Actor struct {
-		ID                 int         `json:"id,omitempty"`
-		Username           string      `json:"username,omitempty"`
-		FirstName          string      `json:"first_name,omitempty"`
-		LastName           string      `json:"last_name,omitempty"`
-		Status             interface{} `json:"status,omitempty"`
-		Description        string      `json:"description,omitempty"`
-		Verified           bool        `json:"verified,omitempty"`
-		Private            bool        `json:"private,omitempty"`
-		Avatar             string      `json:"avatar,omitempty"`
-		Streak             int         `json:"streak,omitempty"`
-		Timezone           string      `json:"timezone,omitempty"`
-		WeekTda            int         `json:"week_tda,omitempty"`
-		TwitterHandle      string      `json:"twitter_handle,omitempty"`
-		InstagramHandle    string      `json:"instagram_handle,omitempty"`
-		ProductHuntHandle  string      `json:"product_hunt_handle,omitempty"`
-		GithubHandle       string      `json:"github_handle,omitempty"`
-		TelegramHandle     string      `json:"telegram_handle,omitempty"`
-		NomadlistHandle    interface{} `json:"nomadlist_handle,omitempty"`
-		BmcHandle          string      `json:"bmc_handle,omitempty"`
-		Header             interface{} `json:"header,omitempty"`
-		IsStaff            bool        `json:"is_staff,omitempty"`
-		Donor              bool        `json:"donor,omitempty"`
-		ShipstreamsHandle  string      `json:"shipstreams_handle,omitempty"`
-		Website            string      `json:"website,omitempty"`
-		Tester             bool        `json:"tester,omitempty"`
-		IsLive             bool        `json:"is_live,omitempty"`
-		Digest             bool        `json:"digest,omitempty"`
-		Gold               bool        `json:"gold,omitempty"`
-		Accent             string      `json:"accent,omitempty"`
-		MakerScore         int         `json:"maker_score,omitempty"`
-		DarkMode           bool        `json:"dark_mode,omitempty"`
-		WeekendsOff        bool        `json:"weekends_off,omitempty"`
-		HardcoreMode       bool        `json:"hardcore_mode,omitempty"`
-		EmailNotifications bool        `json:"email_notifications,omitempty"`
-		OgImage            string      `json:"og_image,omitempty"`
-		DateJoined         time.Time   `json:"date_joined,omitempty"`
-	} `json:"actor,omitempty"`
-	Target struct {
-		ID         int         `json:"id,omitempty"`
-		Event      interface{} `json:"event,omitempty"`
-		Done       bool        `json:"done,omitempty"`
-		InProgress bool        `json:"in_progress,omitempty"`
-		Content    string      `json:"content,omitempty"`
-		CreatedAt  time.Time   `json:"created_at,omitempty"`
-		UpdatedAt  time.Time   `json:"updated_at,omitempty"`
-		DueAt      interface{} `json:"due_at,omitempty"`
-		DoneAt     time.Time   `json:"done_at,omitempty"`
-		User       struct {
-			ID                 int         `json:"id,omitempty"`
-			Username           string      `json:"username,omitempty"`
-			FirstName          string      `json:"first_name,omitempty"`
-			LastName           string      `json:"last_name,omitempty"`
-			Status             interface{} `json:"status,omitempty"`
-			Description        string      `json:"description,omitempty"`
-			Verified           bool        `json:"verified,omitempty"`
-			Private            bool        `json:"private,omitempty"`
-			Avatar             string      `json:"avatar,omitempty"`
-			Streak             int         `json:"streak,omitempty"`
-			Timezone           string      `json:"timezone,omitempty"`
-			WeekTda            int         `json:"week_tda,omitempty"`
-			TwitterHandle      string      `json:"twitter_handle,omitempty"`
-			InstagramHandle    string      `json:"instagram_handle,omitempty"`
-			ProductHuntHandle  string      `json:"product_hunt_handle,omitempty"`
-			GithubHandle       string      `json:"github_handle,omitempty"`
-			TelegramHandle     string      `json:"telegram_handle,omitempty"`
-			NomadlistHandle    string      `json:"nomadlist_handle,omitempty"`
-			BmcHandle          string      `json:"bmc_handle,omitempty"`
-			Header             interface{} `json:"header,omitempty"`
-			IsStaff            bool        `json:"is_staff,omitempty"`
-			Donor              bool        `json:"donor,omitempty"`
-			ShipstreamsHandle  string      `json:"shipstreams_handle,omitempty"`
-			Website            string      `json:"website,omitempty"`
-			Tester             bool        `json:"tester,omitempty"`
-			IsLive             bool        `json:"is_live,omitempty"`
-			Digest             bool        `json:"digest,omitempty"`
-			Gold               bool        `json:"gold,omitempty"`
-			Accent             string      `json:"accent,omitempty"`
-			MakerScore         int         `json:"maker_score,omitempty"`
-			DarkMode           bool        `json:"dark_mode,omitempty"`
-			WeekendsOff        bool        `json:"weekends_off,omitempty"`
-			HardcoreMode       bool        `json:"hardcore_mode,omitempty"`
-			EmailNotifications bool        `json:"email_notifications,omitempty"`
-			OgImage            string      `json:"og_image,omitempty"`
-			DateJoined         time.Time   `json:"date_joined,omitempty"`
-		} `json:"user,omitempty"`
-		Description interface{} `json:"description,omitempty"`
-		ProjectSet  []struct {
-			ID      int    `json:"id,omitempty"`
-			Name    string `json:"name,omitempty"`
-			Private bool   `json:"private,omitempty"`
-			User    int    `json:"user,omitempty"`
-		} `json:"project_set,omitempty"`
-		Praise       int    `json:"praise,omitempty"`
-		Attachment   string `json:"attachment,omitempty"`
-		CommentCount int    `json:"comment_count,omitempty"`
-		OgImage      string `json:"og_image,omitempty"`
-	} `json:"target,omitempty"`
+	ID            int         `json:"id,omitempty"`
+	Key           string      `json:"key,omitempty"`
+	Read          bool        `json:"read,omitempty"`
+	Verb          string      `json:"verb,omitempty"`
+	Recipient     *User       `json:"recipient,omitempty"`
+	Actor         *User       `json:"actor,omitempty"`
+	Target        *Task       `json:"target,omitempty"`
 	BroadcastLink interface{} `json:"broadcast_link,omitempty"`
 	Created       time.Time   `json:"created,omitempty"`
 	TargetType    string      `json:"target_type,omitempty"`
