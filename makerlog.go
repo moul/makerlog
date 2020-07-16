@@ -18,7 +18,9 @@ func New(token string) *Client {
 	client := Client{}
 
 	transport := roundtripper.Transport{
-		ExtraHeader: http.Header{"Content-Type": []string{"application/json"}},
+		ExtraHeader: http.Header{
+			// "Content-Type": []string{"application/json"},
+		},
 	}
 	if token != "" {
 		transport.ExtraHeader["Authorization"] = []string{"Token " + token}
