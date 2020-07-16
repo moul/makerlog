@@ -35,6 +35,67 @@ $ export MAKERLOG_TOKEN=YOUR_TOKEN
 $ makerlog COMMAND
 ```
 
+### Create raw tasks
+
+```console
+$ makerlog raw tasks_create --content="new task from the API!" --done --description=❤️
+{
+  "attachment": null,
+  "comment_count": 0,
+  "content": "new task from the API!",
+  "created_at": "2020-07-16T13:38:28.356311Z",
+  "description": "❤️",
+  "done": true,
+  "done_at": "2020-07-16T13:38:28.356079Z",
+  "due_at": null,
+  "event": null,
+  "id": 287858,
+  "in_progress": false,
+  "og_image": null,
+  "praise": 0,
+  "project_set": [],
+  "updated_at": "2020-07-16T13:38:28.356329Z",
+  "user": {
+    "accent": "#ff00e8",
+    "avatar": "https://gravatar.com/avatar/da14d5cef42c8142d3d40286f28f29bd?s=150\u0026d=mm\u0026r=pg",
+    "bmc_handle": "moul",
+    "dark_mode": false,
+    "date_joined": "2020-06-15T12:18:59.081300Z",
+    "description": "Coding every day since 2014",
+    "digest": true,
+    "donor": false,
+    "email_notifications": true,
+    "first_name": "Manfred",
+    "github_handle": "moul",
+    "gold": true,
+    "hardcore_mode": true,
+    "header": null,
+    "id": 5865,
+    "instagram_handle": "",
+    "is_live": false,
+    "is_staff": false,
+    "last_name": "Touron",
+    "maker_score": 406,
+    "nomadlist_handle": "moul",
+    "og_image": "https://ik.imagekit.io/makerlog/media/uploads/og/2020/07/16/156f001e-f0e0-4bf0-a679-7769cc970b75.jpg",
+    "private": false,
+    "product_hunt_handle": "m42am",
+    "shipstreams_handle": "moul42",
+    "status": null,
+    "streak": 8,
+    "telegram_handle": "",
+    "tester": false,
+    "timezone": "Europe/Paris",
+    "twitter_handle": "moul",
+    "username": "moul",
+    "verified": false,
+    "website": "https://manfred.life",
+    "week_tda": 2,
+    "weekends_off": false
+  }
+}
+```
+
 ### Get raw tasks
 
 ```console
