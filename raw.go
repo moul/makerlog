@@ -4,10 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/google/go-querystring/query"
-	"moul.io/godev"
 	"moul.io/makerlog/makerlogtypes"
 )
 
@@ -62,14 +60,9 @@ func (c *Client) RawTasksCreate(ctx context.Context, req *makerlogtypes.TasksCre
 	}
 	defer resp.Body.Close()
 
-	//var reply makerlogtypes.TasksCreateReply
-	var reply interface{}
+	var reply makerlogtypes.TasksCreateReply
 	if err := json.NewDecoder(resp.Body).Decode(&reply); err != nil {
 		return nil, err
 	}
-	fmt.Println(godev.PrettyJSON(reply))
-
-	return nil, nil
-
-	//return &reply, nil
+	return &reply, nil
 }

@@ -14,7 +14,7 @@ type User struct {
 	Avatar             string      `json:"avatar,omitempty"`
 	Streak             int         `json:"streak,omitempty"`
 	Timezone           string      `json:"timezone,omitempty"`
-	WeekTda            int         `json:"week_tda,omitempty"`
+	WeekTda            float64     `json:"week_tda,omitempty"`
 	TwitterHandle      string      `json:"twitter_handle,omitempty"`
 	InstagramHandle    string      `json:"instagram_handle,omitempty"`
 	ProductHuntHandle  string      `json:"product_hunt_handle,omitempty"`
