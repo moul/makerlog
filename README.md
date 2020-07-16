@@ -19,6 +19,8 @@
 
 ## Usage
 
+### Login
+
 ```console
 # get a token by yourself or use the built-in login helper
 $ makerlog login --username=YOUR_USERNAME --password=YOUR_PASS
@@ -33,8 +35,69 @@ $ export MAKERLOG_TOKEN=YOUR_TOKEN
 $ makerlog COMMAND
 ```
 
+### Get raw tasks
+
 ```console
-# get raw notifications
+# 5865 is my user id (moul), without this option, you get everybody's tasks
+$ makerlog raw tasks_list --user=5865 | jq 'del(.results[].user)'
+{
+  "count": 476,
+  "next": "https://api.getmakerlog.com/tasks/?limit=20&offset=20&user=5865",
+  "results": [
+    {
+      "id": 287829,
+      "done": true,
+      "content": "🎉 release a first version of my Golang's #makerlog API client + CLI",
+      "created_at": "2020-07-16T13:33:11.556909+02:00",
+      "updated_at": "2020-07-16T13:33:24.366567+02:00",
+      "done_at": "2020-07-16T13:33:11.556575+02:00",
+      "project_set": [
+        {
+          "id": 13807,
+          "name": "makerlog",
+          "user": 5865
+        }
+      ],
+      "attachment": "https://ik.imagekit.io/makerlog/media/uploads/tasks/2020/07/16/Screenshot_-_Manfred_2020-07-16_at_13.32.16.png",
+      "og_image": "https://ik.imagekit.io/makerlog/media/uploads/tasks/2020/07/16/8c7c9ae2-3c24-4efb-9975-65a0833615b0.jpg"
+    },
+    {
+      "id": 287805,
+      "done": true,
+      "content": "🐙 yesterday on GitHub #oss #berty #sgtm",
+      "created_at": "2020-07-16T11:09:26.386739+02:00",
+      "updated_at": "2020-07-16T11:45:31.442381+02:00",
+      "done_at": "2020-07-16T11:09:26.386547+02:00",
+      "project_set": [
+        {
+          "id": 13767,
+          "name": "sgtm",
+          "user": 5865
+        },
+        {
+          "id": 13394,
+          "name": "berty",
+          "user": 5865
+        },
+        {
+          "id": 13405,
+          "name": "oss",
+          "user": 5865
+        }
+      ],
+      "praise": 5,
+      "attachment": "https://ik.imagekit.io/makerlog/media/uploads/tasks/2020/07/16/320fc7e105e436af22eb1fa67c9cb415.png",
+      "og_image": "https://ik.imagekit.io/makerlog/media/uploads/tasks/2020/07/16/0c062ed4-32eb-487f-8b6b-32e9db41e607.jpg"
+    },
+    {
+      "id": 287472,
+      "done": true,
+      ...
+```
+
+### Get raw notifications
+
+```console
 $ makerlog raw notifications_list | jq ". | length"
 1
 
