@@ -1,6 +1,9 @@
 package makerlogtypes
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type User struct {
 	ID                 int         `json:"id,omitempty"`
@@ -65,4 +68,8 @@ type Task struct {
 	Attachment   string      `json:"attachment,omitempty"`
 	CommentCount int         `json:"comment_count,omitempty"`
 	OgImage      string      `json:"og_image,omitempty"`
+}
+
+func (t *Task) CanonicalURL() string {
+	return fmt.Sprintf("https://getmakerlog.com/tasks/%d", t.ID)
 }
