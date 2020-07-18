@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"mime/multipart"
+	"net/http"
 
 	"github.com/google/go-querystring/query"
 	"moul.io/makerlog/makerlogtypes"
@@ -49,12 +51,52 @@ func (c *Client) RawTasksList(ctx context.Context, req *makerlogtypes.TasksListR
 }
 
 func (c *Client) RawTasksCreate(ctx context.Context, req *makerlogtypes.TasksCreateRequest) (*makerlogtypes.TasksCreateReply, error) {
-	reqBody, err := json.Marshal(req)
+	fields := map[string]string{
+		"content": req.Content,
+	}
+	if req.Description != "" {
+		fields["description"] = req.Description
+	}
+	if req.Done {
+		fields["done"] = "true"
+	}
+	if req.InProgress {
+		fields["in_progress"] = "true"
+	}
+	if req.DueAt != nil {
+		fields["due_at"] = req.DueAt.String()
+	}
+
+	var b bytes.Buffer
+	w := multipart.NewWriter(&b)
+	for k, v := range fields {
+		fw, err := w.CreateFormField(k)
+		if err != nil {
+			return nil, err
+		}
+		_, err = fw.Write([]byte(v))
+		if err != nil {
+			return nil, err
+		}
+	}
+	if req.Attachment != nil {
+		fw, err := w.CreateFormFile("attachment", req.Attachment.Filename)
+		if err != nil {
+			return nil, err
+		}
+		_, err = fw.Write(req.Attachment.Bytes)
+		if err != nil {
+			return nil, err
+		}
+		w.Close()
+	}
+
+	request, err := http.NewRequest("POST", "https://api.getmakerlog.com/tasks/", &b)
 	if err != nil {
 		return nil, err
 	}
-
-	resp, err := c.http.Post("https://api.getmakerlog.com/tasks/", "application/json", bytes.NewBuffer(reqBody))
+	request.Header.Set("Content-Type", w.FormDataContentType())
+	resp, err := c.http.Do(request)
 	if err != nil {
 		return nil, err
 	}
