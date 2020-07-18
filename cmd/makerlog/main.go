@@ -4,8 +4,11 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
+	"path"
 	"strings"
 
 	ff "github.com/peterbourgon/ff/v3"
@@ -31,6 +34,7 @@ func run(args []string) error {
 		debug              bool
 		username, password string
 		prettyJSON         bool
+		attachPath         string
 		tasksListRequest   makerlogtypes.TasksListRequest
 		tasksCreateRequest makerlogtypes.TasksCreateRequest
 	)
@@ -52,6 +56,8 @@ func run(args []string) error {
 	tasksCreateFlags.BoolVar(&tasksCreateRequest.Done, "done", false, "")
 	tasksCreateFlags.BoolVar(&tasksCreateRequest.InProgress, "in-progress", false, "")
 	//tasksCreateFlags.TimeVar(&tasksCreateRequest.DueAt, "due-at", nil, "")
+	addTaskFlags := flag.NewFlagSet("add-task", flag.ExitOnError)
+	addTaskFlags.StringVar(&attachPath, "attach", "", "attachment path")
 
 	root := &ffcli.Command{
 		Name:       "makerlog",
@@ -76,8 +82,10 @@ func run(args []string) error {
 				Name:       "todo",
 				ShortHelp:  "create a new todo task",
 				ShortUsage: `makerlog todo "code my new product #life"`,
+				FlagSet:    addTaskFlags,
+				Options:    []ff.Option{ff.WithEnvVarPrefix("MAKERLOG")},
 				Exec: func(ctx context.Context, args []string) error {
-					req, err := tasksCreateRequestFromArgs(args)
+					req, err := tasksCreateRequestFromArgs(args, attachPath)
 					if err != nil {
 						return err
 					}
@@ -97,8 +105,10 @@ func run(args []string) error {
 				Name:       "in-progress",
 				ShortHelp:  "create a new in-progress task",
 				ShortUsage: `makerlog in-progress "brainstorming on my new product #life"`,
+				FlagSet:    addTaskFlags,
+				Options:    []ff.Option{ff.WithEnvVarPrefix("MAKERLOG")},
 				Exec: func(ctx context.Context, args []string) error {
-					req, err := tasksCreateRequestFromArgs(args)
+					req, err := tasksCreateRequestFromArgs(args, attachPath)
 					if err != nil {
 						return err
 					}
@@ -119,8 +129,10 @@ func run(args []string) error {
 				Name:       "done",
 				ShortHelp:  "create a new done task",
 				ShortUsage: `makerlog done "excited to launch my new product :) #life"`,
+				FlagSet:    addTaskFlags,
+				Options:    []ff.Option{ff.WithEnvVarPrefix("MAKERLOG")},
 				Exec: func(ctx context.Context, args []string) error {
-					req, err := tasksCreateRequestFromArgs(args)
+					req, err := tasksCreateRequestFromArgs(args, attachPath)
 					if err != nil {
 						return err
 					}
@@ -210,7 +222,7 @@ func run(args []string) error {
 	return root.ParseAndRun(context.Background(), os.Args[1:])
 }
 
-func tasksCreateRequestFromArgs(args []string) (*makerlogtypes.TasksCreateRequest, error) {
+func tasksCreateRequestFromArgs(args []string, attachPath string) (*makerlogtypes.TasksCreateRequest, error) {
 	text := strings.Join(args, " ")
 	text = strings.TrimSpace(text)
 	lines := strings.Split(text, "\n")
@@ -226,6 +238,28 @@ func tasksCreateRequestFromArgs(args []string) (*makerlogtypes.TasksCreateReques
 	req := makerlogtypes.TasksCreateRequest{
 		Content:     content,
 		Description: description,
+	}
+	if attachPath != "" {
+		f, err := os.Open(attachPath)
+		if err != nil {
+			return nil, fmt.Errorf("open %q: %w", attachPath, err)
+		}
+		defer f.Close()
+		b, err := ioutil.ReadAll(f)
+		if err != nil {
+			return nil, fmt.Errorf("read %q: %w", attachPath, err)
+		}
+		if len(b) < 1 {
+			return nil, fmt.Errorf("empty file %q: %w", attachPath, err)
+		}
+		contentType := http.DetectContentType(b)
+		if !strings.HasPrefix(contentType, "image/") {
+			return nil, fmt.Errorf("invalid content-type %q: %q", attachPath, contentType)
+		}
+		req.Attachment = &makerlogtypes.Attachment{
+			Filename: path.Base(attachPath),
+			Bytes:    b,
+		}
 	}
 	return &req, nil
 }

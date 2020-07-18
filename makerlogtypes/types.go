@@ -5,12 +5,13 @@ import "time"
 // POST /tasks
 
 type TasksCreateRequest struct {
-	Content     string     `json:"content,omitempty"`
-	Done        bool       `json:"done,omitempty"`
-	InProgress  bool       `json:"in_progress,omitempty"`
-	DueAt       *time.Time `json:"due_at,omitempty"`
-	User        *User      `json:"user,omitempty"`
-	Description string     `json:"description,omitempty"`
+	Content     string      `json:"content,omitempty"`
+	Done        bool        `json:"done,omitempty"`
+	InProgress  bool        `json:"in_progress,omitempty"`
+	DueAt       *time.Time  `json:"due_at,omitempty"`
+	User        *User       `json:"user,omitempty"`
+	Description string      `json:"description,omitempty"`
+	Attachment  *Attachment `json:"-"`
 }
 type TasksCreateReply Task
 
