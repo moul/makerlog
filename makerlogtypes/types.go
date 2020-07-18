@@ -14,6 +14,11 @@ type TasksCreateRequest struct {
 }
 type TasksCreateReply Task
 
+func (r *TasksCreateReply) CanonicalURL() string {
+	t := Task(*r)
+	return t.CanonicalURL()
+}
+
 // GET /tasks/
 
 type TasksListRequest struct {

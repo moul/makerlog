@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	ff "github.com/peterbourgon/ff/v3"
 	"github.com/peterbourgon/ff/v3/ffcli"
@@ -27,6 +28,7 @@ func main() {
 func run(args []string) error {
 	var (
 		token              string
+		debug              bool
 		username, password string
 		prettyJSON         bool
 		tasksListRequest   makerlogtypes.TasksListRequest
@@ -34,6 +36,7 @@ func run(args []string) error {
 	)
 	rootFlags := flag.NewFlagSet("root", flag.ExitOnError)
 	rootFlags.StringVar(&token, "token", "", "Your private API key (use the 'login' command to get one)")
+	rootFlags.BoolVar(&debug, "debug", false, "More verbose output")
 	loginFlags := flag.NewFlagSet("login", flag.ExitOnError)
 	loginFlags.StringVar(&username, "username", os.Getenv("USER"), "your username")
 	loginFlags.StringVar(&password, "password", "", "your password")
@@ -67,6 +70,71 @@ func run(args []string) error {
 						return err
 					}
 					fmt.Println(token)
+					return nil
+				},
+			}, {
+				Name:       "todo",
+				ShortHelp:  "create a new todo task",
+				ShortUsage: `makerlog todo "code my new product #life"`,
+				Exec: func(ctx context.Context, args []string) error {
+					req, err := tasksCreateRequestFromArgs(args)
+					if err != nil {
+						return err
+					}
+
+					client := makerlog.New(token)
+					ret, err := client.RawTasksCreate(ctx, req)
+					if err != nil {
+						return err
+					}
+					if debug {
+						fmt.Fprintln(os.Stderr, godev.PrettyJSON(ret))
+					}
+					fmt.Println(ret.CanonicalURL())
+					return nil
+				},
+			}, {
+				Name:       "in-progress",
+				ShortHelp:  "create a new in-progress task",
+				ShortUsage: `makerlog in-progress "brainstorming on my new product #life"`,
+				Exec: func(ctx context.Context, args []string) error {
+					req, err := tasksCreateRequestFromArgs(args)
+					if err != nil {
+						return err
+					}
+					req.InProgress = true
+
+					client := makerlog.New(token)
+					ret, err := client.RawTasksCreate(ctx, req)
+					if err != nil {
+						return err
+					}
+					if debug {
+						fmt.Fprintln(os.Stderr, godev.PrettyJSON(ret))
+					}
+					fmt.Println(ret.CanonicalURL())
+					return nil
+				},
+			}, {
+				Name:       "done",
+				ShortHelp:  "create a new done task",
+				ShortUsage: `makerlog done "excited to launch my new product :) #life"`,
+				Exec: func(ctx context.Context, args []string) error {
+					req, err := tasksCreateRequestFromArgs(args)
+					if err != nil {
+						return err
+					}
+					req.Done = true
+
+					client := makerlog.New(token)
+					ret, err := client.RawTasksCreate(ctx, req)
+					if err != nil {
+						return err
+					}
+					if debug {
+						fmt.Fprintln(os.Stderr, godev.PrettyJSON(ret))
+					}
+					fmt.Println(ret.CanonicalURL())
 					return nil
 				},
 			}, {
@@ -140,4 +208,24 @@ func run(args []string) error {
 	}
 
 	return root.ParseAndRun(context.Background(), os.Args[1:])
+}
+
+func tasksCreateRequestFromArgs(args []string) (*makerlogtypes.TasksCreateRequest, error) {
+	text := strings.Join(args, " ")
+	text = strings.TrimSpace(text)
+	lines := strings.Split(text, "\n")
+	if text == "" || len(lines) < 1 {
+		return nil, flag.ErrHelp
+	}
+	content := lines[0]
+	description := ""
+	if len(lines) > 1 {
+		description = strings.Join(lines[1:], "\n")
+		description = strings.TrimSpace(description)
+	}
+	req := makerlogtypes.TasksCreateRequest{
+		Content:     content,
+		Description: description,
+	}
+	return &req, nil
 }
